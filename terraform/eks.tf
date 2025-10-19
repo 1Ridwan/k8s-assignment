@@ -6,12 +6,12 @@ module "eks" {
   kubernetes_version = "1.33"
 
   addons = {
-    coredns                = {}
+    coredns = {}
     eks-pod-identity-agent = {
       before_compute = true
     }
-    kube-proxy             = {}
-    vpc-cni                = {
+    kube-proxy = {}
+    vpc-cni = {
       before_compute = true
     }
   }
@@ -34,12 +34,10 @@ module "eks" {
       instance_types = ["m5.xlarge"]
 
       min_size     = 2
-      max_size     = 10
+      max_size     = 5
       desired_size = 2
     }
   }
 
-  tags = {
-      local.tags
-  }
+  tags = local.tags
 }
