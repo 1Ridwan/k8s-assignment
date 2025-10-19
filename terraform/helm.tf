@@ -43,3 +43,39 @@ resource "aws_eks_pod_identity_association" "cert_manager" {
   service_account = "cert-manager"
   role_arn        = module.cert_manager_pod_identity.iam_role_arn
 }
+
+## external dns ##
+
+resource "helm_release" "external_dns" {
+  name       = "external-dns"
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "external-dns"
+
+  create_namespace = true
+  namespace        = "external-dns"
+
+  values = [
+    "${file("helm-values/external-dns.yaml")}",
+  ]
+
+  depends_on = [aws_eks_pod_identity_association.cert_manager]
+}
+
+
+module "external_dns_pod_identity" {
+  source = "terraform-aws-modules/eks-pod-identity/aws"
+  name   = "external-dns"
+
+  # This module can attach a least-priv Route53 policy for ExternalDNS
+  attach_external_dns_policy    = true
+  external_dns_hosted_zone_arns = [local.hosted_zone_arn]
+
+}
+
+resource "aws_eks_pod_identity_association" "external_dns" {
+  cluster_name    = module.eks.cluster_name
+  namespace       = "external-dns"
+  service_account = "external-dns"
+  role_arn        = module.external_dns_pod_identity.iam_role_arn
+}
+
