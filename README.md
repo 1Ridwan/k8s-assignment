@@ -1,5 +1,2 @@
 # MESSAGE
-# k8s-assignment
-# k8s-assignment
-# k8s-assignment
-# k8s-assignment
+# In this repo I am going to be deploying a web app on AWS EKS
